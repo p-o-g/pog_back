@@ -16,7 +16,7 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const tagsByTagIds = await tagDB.getTagByTagIds(client, tagIds);
-    const postTagByTagIds = await relationPostTagDB.getPostTagByTagIds(client, tagIds);
+    const postTagByTagIds = await relationPostTagDB.getRelationPostTagByTagIds(client, tagIds);
     console.log(postTagByTagIds);
     const postIds = [...new Set(postTagByTagIds.map((o) => o.postId).filter(Boolean))];
     const posts = await postDB.getPostByIds(client, postIds);

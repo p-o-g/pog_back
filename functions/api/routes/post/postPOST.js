@@ -6,7 +6,7 @@ const db = require('../../../db/db');
 const { postDB } = require('../../../db');
 
 module.exports = async (req, res) => {
-  const { userId, title, content } = req.body;
+  const { userId, title, description, ver, thumbnail } = req.body;
 
   if (!userId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
@@ -14,7 +14,7 @@ module.exports = async (req, res) => {
 
   try {
     client = await db.connect(req);
-    const post = await postDB.addPost(client, userId, title, content);
+    const post = await postDB.addPost(client, userId, title, description, ver, thumbnail);
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ADD_ONE_POST_SUCCESS, post));
   } catch (error) {

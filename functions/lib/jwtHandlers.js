@@ -5,14 +5,13 @@ const secretKey = process.env.JWT_SECRET;
 const options = {
   algorithm: 'HS256',
   expiresIn: '30d',
-  issuer: 'wesopt',
+  issuer: 'pog',
 };
 
 const sign = (user) => {
   const payload = {
     id: user.id,
     email: user.email,
-    name: user.name || null,
     idFirebase: user.idFirebase,
   };
 

@@ -4,7 +4,7 @@ const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 const getAllUsers = async (client) => {
   const { rows } = await client.query(
     `
-    SELECT * FROM "user" u
+    SELECT * FROM "user"
     WHERE is_deleted = FALSE
     `,
   );
@@ -14,7 +14,7 @@ const getAllUsers = async (client) => {
 const getUserById = async (client, userId) => {
   const { rows } = await client.query(
     `
-    SELECT * FROM "user" u
+    SELECT * FROM "user"
     WHERE id = $1
     AND is_deleted = FALSE
     `,
@@ -29,7 +29,7 @@ const getUserById = async (client, userId) => {
 const getUserByIdFirebase = async (client, idFirebase) => {
   const { rows } = await client.query(
     `
-    SELECT * FROM "user" u
+    SELECT * FROM "user"
     WHERE id_firebase = $1
     AND is_deleted = FALSE
     `,
@@ -41,7 +41,7 @@ const getUserByIdFirebase = async (client, idFirebase) => {
 const getUserByEmail = async (client, email) => {
   const { rows } = await client.query(
     `
-    SELECT * FROM "user" u
+    SELECT * FROM "user"
     WHERE email = $1
     AND is_deleted = FALSE
     `,
@@ -67,7 +67,7 @@ const updateUser = async (client, organization, userId) => {
 
   const { rows } = await client.query(
     `
-    UPDATE "user" u
+    UPDATE "user"
     SET organization = $1, updated_at = now()
     WHERE id = $2
     RETURNING * 
@@ -80,7 +80,7 @@ const updateUser = async (client, organization, userId) => {
 const deleteUser = async (client, userId) => {
   const { rows } = await client.query(
     `
-    UPDATE "user" u
+    UPDATE "user"
     SET is_deleted = TRUE, updated_at = now()
     WHERE id = $1
     RETURNING *
@@ -94,8 +94,8 @@ const deleteUser = async (client, userId) => {
 const addUser = async (client, email, loginId, organization, idFirebase) => {
   const { rows } = await client.query(
     `
-    INSERT INTO "user" u
-    (email, loginId, organization, id_firebase)
+    INSERT INTO "user"
+    (email, login_id, organization, id_firebase)
     VALUES
     ($1, $2, $3, $4)
     RETURNING *

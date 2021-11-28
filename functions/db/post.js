@@ -23,22 +23,22 @@ const getPostById = async (client, postId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-// TODO : tag도 추가 가능하도록, thumbnail 처리
-const addPost = async (client, userId, title, description, ver, thumbnail) => {
+// TODO : tag도 추가 가능하도록
+const addPost = async (client, userId, title, description, ver, imageUrls) => {
   const { rows } = await client.query(
     `
     INSERT INTO post
-    (user_id, title, description, ver, thumbnail)
+    (user_id, title, description, ver, image_urls)
     VALUES
     ($1, $2, $3, $4, $5)
     RETURNING *
     `,
-    [userId, title, description, ver, thumbnail],
+    [userId, title, description, ver, imageUrls],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const updatePost = async (client, title, description, ver, thumbnail, postId) => {
+const updatePost = async (client, title, description, ver, imageUrls, postId) => {
   const { rows: existingRows } = await client.query(
     `
     SELECT * FROM post p
@@ -50,16 +50,16 @@ const updatePost = async (client, title, description, ver, thumbnail, postId) =>
 
   if (existingRows.length === 0) return false;
 
-  const data = _.merge({}, convertSnakeToCamel.keysToCamel(existingRows[0]), { title, description, ver, thumbnail });
+  const data = _.merge({}, convertSnakeToCamel.keysToCamel(existingRows[0]), { title, description, ver, imageUrls });
 
   const { rows } = await client.query(
     `
     UPDATE post p
-    SET title = $1, description = $2, ver = $3, thumbnail = $4, updated_at = now()
+    SET title = $1, description = $2, ver = $3, image_urls = $4, updated_at = now()
     WHERE id = $5
     RETURNING * 
     `,
-    [data.title, data.description, data.ver, data.thumbnail, postId],
+    [data.title, data.description, data.ver, data.imageUrls, postId],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
@@ -112,4 +112,18 @@ const getPostByIds = async (client, postIds) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { getAllPosts, getPostById, addPost, updatePost, deletePost, getPostsByUserId, getPostsByUserIds, getPostByIds };
+const getPostsBySearchWord = async (client, searchWord) => {
+  if (searchWord.length < 1) return [];
+  const { rows } = await client.query(
+    `
+    SELECT * FROM post
+    WHERE title LIKE '%${searchWord}%'
+    OR description LIKE '%${searchWord}%'
+    OR ver LIKE '%${searchWord}%'
+    AND is_deleted = FALSE
+    `,
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+module.exports = { getAllPosts, getPostById, addPost, updatePost, deletePost, getPostsByUserId, getPostsByUserIds, getPostByIds, getPostsBySearchWord };

@@ -23,7 +23,9 @@ module.exports = async (req, res) => {
       relationPostTags[i].tag = _.find(tags, (tag) => tag.id === relationPostTags[i].tagId);
     }
 
-    posts.tags = _.filter(relationPostTags, (pt) => pt.postId === posts.id).map((o) => o.tag);
+    for (let i = 0; i < posts.length; i++) {
+      posts[i].tags = _.filter(relationPostTags, (pt) => pt.postId === posts[i].id).map((o) => o.tag);
+    }
 
     // 검색 결과 전체 포스트 개수 반환
 

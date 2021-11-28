@@ -4,6 +4,6 @@ const router = express.Router();
 
 router.get('/:userId', require('./userGET'));
 router.put('/:userId', checkUser, require('./userPUT'));
-router.delete('/:userId', require('./userDELETE'));
+router.delete('/:userId', checkUser, require('./userDELETE'));
 
 module.exports = router;

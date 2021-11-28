@@ -1,6 +1,20 @@
 const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
+const addRelationPostTag = async (client, postId, tagId) => {
+  const { rows } = await client.query(
+    `
+    INSERT INTO relation_post_tag
+    (post_id, tag_id)
+    VALUES
+    ($1, $2)
+    RETURNING *
+    `,
+    [postId, tagId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 const getAllRelationPostTags = async (client) => {
   const { rows } = await client.query(
     `
@@ -20,4 +34,4 @@ const getRelationPostTagByTagIds = async (client, tagIds) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { getAllRelationPostTags, getRelationPostTagByTagIds };
+module.exports = { getAllRelationPostTags, getRelationPostTagByTagIds, addRelationPostTag };

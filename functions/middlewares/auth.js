@@ -8,39 +8,38 @@ const { userDB } = require('../db');
 const { TOKEN_INVALID, TOKEN_EXPIRED } = require('../constants/jwt');
 
 const checkUser = async (req, res, next) => {
+  // request headers에 accesstoken라는 이름으로 담긴 값(jwt)을 가져옵니다.
+  const { accesstoken } = req.headers;
+
+  // accesstoken이 없을 시의 에러 처리입니다.
+  if (!accesstoken) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.TOKEN_EMPTY));
+
   let client;
   try {
     client = await db.connect(req);
 
-    let user;
+    const decodedToken = jwtHandlers.verify(accesstoken);
 
-    const authHeader = String(req.headers.authorization || '');
-
-    if (!authHeader) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NO_AUTH_HEADER));
-    const token = authHeader.substring(7, authHeader.length);
-    if (!token) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.TOKEN_EMPTY));
-
-    const decodedToken = jwtHandlers.verify(token);
     if (decodedToken === TOKEN_EXPIRED) return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.TOKEN_EXPIRED));
     if (decodedToken === TOKEN_INVALID) return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.TOKEN_INVALID));
 
     const userId = decodedToken.id;
-    console.log(decodedToken);
+
     if (!userId) return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.TOKEN_INVALID));
 
-    user = await userDB.getUserById(client, userId);
+    const user = await userDB.getUserById(client, userId);
 
     if (!user) return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NO_USER));
 
     req.user = user;
+    next();
   } catch (error) {
     console.log(error);
+    functions.logger.error(`[AUTH ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, accesstoken);
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
   } finally {
     client.release();
   }
-
-  next();
 };
 
 module.exports = { checkUser };

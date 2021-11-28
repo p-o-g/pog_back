@@ -1,6 +1,7 @@
 const functions = require('firebase-functions');
 const jwt = require('jsonwebtoken');
 const { TOKEN_INVALID, TOKEN_EXPIRED } = require('../constants/jwt');
+
 const secretKey = process.env.JWT_SECRET;
 const options = {
   algorithm: 'HS256',
@@ -17,10 +18,11 @@ const sign = (user) => {
 
   const result = {
     accesstoken: jwt.sign(payload, secretKey, options),
-    // refreshToken: jwt.sign(payload, secretKey, refreshOptions),
   };
   return result;
 };
+
+// JWT를 해독하고, 해독한 JWT가 우리가 만든 JWT가 맞는지 확인합니다 (인증).
 const verify = (token) => {
   let decoded;
   try {
@@ -28,16 +30,19 @@ const verify = (token) => {
   } catch (err) {
     if (err.message === 'jwt expired') {
       console.log('expired token');
+      functions.logger.error('expired token');
       return TOKEN_EXPIRED;
     } else if (err.message === 'invalid token') {
       console.log('invalid token');
-      console.log(TOKEN_INVALID);
+      functions.logger.error('invalid token');
       return TOKEN_INVALID;
     } else {
       console.log('invalid token');
+      functions.logger.error('invalid token');
       return TOKEN_INVALID;
     }
   }
+
   return decoded;
 };
 

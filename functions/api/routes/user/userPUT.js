@@ -7,9 +7,9 @@ const { userDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const { userId } = req.params;
-  const { username, phone } = req.body;
+  const { organization } = req.body;
 
-  if (Number(req.user.id) !== userId) return res.status;
+  if (Number(req.user.id) != userId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.MISS_MATCH_USER));
 
   if (!userId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const updatedUser = await userDB.updateUser(client, userId, username, phone);
+    const updatedUser = await userDB.updateUser(client, organization, userId);
     if (!updatedUser) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_USER));
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.UPDATE_ONE_USER_SUCCESS, updatedUser));

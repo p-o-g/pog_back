@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const user = await userDB.getUserById(req.user.id);
+    const user = await userDB.getUserById(client, req.user.id);
     if (!user) {
       res.status(statusCode.NOT_FOUND).json(util.fail(statusCode.NOT_FOUND, responseMessage.NO_USER));
     }

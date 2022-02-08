@@ -3,7 +3,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { userDB, postDB } = require('../../../db');
+const { userDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const { userId } = req.params;
@@ -17,9 +17,14 @@ module.exports = async (req, res) => {
     const user = await userDB.getUserById(client, userId);
     if (!user) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_USER));
 
-    const posts = await postDB.getPostsByUserId(client, userId);
+    const userData = {
+      email: user.email,
+      nickname: user.nickname,
+      organization: user.organization,
+      phone: user.phone,
+    };
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ONE_USER_SUCCESS, { user, posts }));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ONE_USER_SUCCESS, userData));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);

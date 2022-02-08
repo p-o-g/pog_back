@@ -6,18 +6,12 @@ const db = require('../../../db/db');
 const { userDB } = require('../../../db');
 
 module.exports = async (req, res) => {
-  const { userId } = req.params;
-
-  if (Number(req.user.id) != userId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.MISS_MATCH_USER));
-
-  if (!userId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
-
   let client;
 
   try {
     client = await db.connect(req);
 
-    const deletedUser = await userDB.deleteUser(client, userId);
+    const deletedUser = await userDB.deleteUser(client, req.user.id);
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.DELETE_ONE_USER_SUCCESS, deletedUser));
   } catch (error) {

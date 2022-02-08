@@ -50,6 +50,18 @@ const getUserByEmail = async (client, email) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const getUserByNickname = async (client, nickname) => {
+  const { rows } = await client.query(
+    `
+    SELECT * FROM "user"
+    WHERE nickname = $1
+    AND is_deleted = FALSE
+    `,
+    [nickname],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 // TODO : 일단 Not null인 organization만 변경가능하도록
 const updateUser = async (client, nickname, phone, organization, userId) => {
   const { rows: existingRows } = await client.query(
@@ -106,4 +118,4 @@ const addUser = async (client, email, organization, idFirebase, nickname, phone)
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { getAllUsers, getUserById, getUserByIdFirebase, getUserByEmail, updateUser, deleteUser, addUser };
+module.exports = { getAllUsers, getUserById, getUserByIdFirebase, getUserByEmail, getUserByNickname, updateUser, deleteUser, addUser };

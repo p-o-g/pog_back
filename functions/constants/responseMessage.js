@@ -9,6 +9,7 @@ module.exports = {
 
   // 로그인
   LOGIN_SUCCESS: '로그인 성공',
+  LOGOUT_SUCCESS: '로그아웃 성공',
   LOGIN_FAIL: '로그인 실패',
   NO_USER: '존재하지 않는 회원입니다.',
   MISS_MATCH_USER: '유저가 맞지 않습니다.',

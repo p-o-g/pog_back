@@ -16,6 +16,18 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
+    // 닉네임 중복 검사
+    const nicknameUser = await userDB.getUserByNickname(client, nickname);
+    if (nicknameUser) {
+      return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, '이미 가입된 닉네임입니다.'));
+    }
+
+    // 휴대폰 번호 중복 검사
+    const phoneUser = await userDB.getUserByPhone(client, phone);
+    if (phoneUser) {
+      return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, '이미 가입된 번호입니다.'));
+    }
+
     const updatedUser = await userDB.updateUser(client, nickname, phone, organization, req.user.id);
     if (!updatedUser) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_USER));
 

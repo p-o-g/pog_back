@@ -6,19 +6,17 @@ const db = require('../../../db/db');
 const { userDB } = require('../../../db');
 
 module.exports = async (req, res) => {
-  const { userId } = req.params;
-  const { organization } = req.body;
-
-  if (Number(req.user.id) != userId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.MISS_MATCH_USER));
-
-  if (!userId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  const { nickname, phone, organization } = req.body;
+  if (!nickname || !phone) {
+    return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  }
 
   let client;
 
   try {
     client = await db.connect(req);
 
-    const updatedUser = await userDB.updateUser(client, organization, userId);
+    const updatedUser = await userDB.updateUser(client, nickname, phone, organization, req.user.id);
     if (!updatedUser) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_USER));
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.UPDATE_ONE_USER_SUCCESS, updatedUser));

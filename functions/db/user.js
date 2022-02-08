@@ -91,17 +91,17 @@ const deleteUser = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const addUser = async (client, email, loginId, organization, idFirebase) => {
+const addUser = async (client, email, organization, idFirebase, nickname, phone) => {
   const { rows } = await client.query(
     `
     INSERT INTO "user"
-    (email, login_id, organization, id_firebase)
+    (email, organization, id_firebase, nickname, phone)
     VALUES
-    ($1, $2, $3, $4)
+    ($1, $2, $3, $4, $5)
     RETURNING *
     `,
 
-    [email, loginId, organization, idFirebase],
+    [email, organization, idFirebase, nickname, phone],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };

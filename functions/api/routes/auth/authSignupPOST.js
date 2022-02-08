@@ -9,10 +9,10 @@ const jwtHandlers = require('../../../lib/jwtHandlers');
 const { logger } = require('firebase-functions/v1');
 
 module.exports = async (req, res) => {
-  const { email, loginId, organization, password } = req.body;
+  const { email, nickname, phone, organization, password } = req.body;
 
   // request body가 잘못됐을 때
-  if (!email || !loginId || !organization || !password) {
+  if (!email || !nickname || !phone || !password) {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   }
 
@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
 
     const userFirebase = await admin
       .auth()
-      .createUser({ email, password, loginId })
+      .createUser({ email, password })
       .then((user) => user)
       .catch((e) => {
         console.log(e);
@@ -42,7 +42,7 @@ module.exports = async (req, res) => {
 
     const idFirebase = userFirebase.uid;
 
-    const user = await userDB.addUser(client, email, loginId, organization, idFirebase);
+    const user = await userDB.addUser(client, email, organization, idFirebase, nickname, phone);
     const { accesstoken } = jwtHandlers.sign(user);
 
     console.log(user);

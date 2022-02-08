@@ -19,7 +19,7 @@ module.exports = async (req, res) => {
   let client;
 
   try {
-    const client = await db.connect();
+    client = await db.connect(req);
 
     // 닉네임 중복 검사
     const nicknameUser = await userDB.getUserByNickname(client, nickname);

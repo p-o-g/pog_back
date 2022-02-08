@@ -51,7 +51,7 @@ const getUserByEmail = async (client, email) => {
 };
 
 // TODO : 일단 Not null인 organization만 변경가능하도록
-const updateUser = async (client, organization, userId) => {
+const updateUser = async (client, nickname, phone, organization, userId) => {
   const { rows: existingRows } = await client.query(
     `
     SELECT * FROM "user"
@@ -63,16 +63,16 @@ const updateUser = async (client, organization, userId) => {
 
   if (existingRows.length === 0) return false;
 
-  const data = _.merge({}, convertSnakeToCamel.keysToCamel(existingRows[0]), { organization });
+  const data = _.merge({}, convertSnakeToCamel.keysToCamel(existingRows[0]), { nickname, phone, organization });
 
   const { rows } = await client.query(
     `
     UPDATE "user"
-    SET organization = $1, updated_at = now()
+    SET nickname = $1, phone = $2, organization = $3, updated_at = now()
     WHERE id = $2
     RETURNING * 
     `,
-    [data.organization, userId],
+    [data.nickname, data.phone, data.organization, userId],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };

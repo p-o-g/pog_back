@@ -62,7 +62,6 @@ const getUserByNickname = async (client, nickname) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-// TODO : 일단 Not null인 organization만 변경가능하도록
 const updateUser = async (client, nickname, phone, organization, userId) => {
   const { rows: existingRows } = await client.query(
     `
@@ -81,7 +80,7 @@ const updateUser = async (client, nickname, phone, organization, userId) => {
     `
     UPDATE "user"
     SET nickname = $1, phone = $2, organization = $3, updated_at = now()
-    WHERE id = $2
+    WHERE id = $4
     RETURNING * 
     `,
     [data.nickname, data.phone, data.organization, userId],

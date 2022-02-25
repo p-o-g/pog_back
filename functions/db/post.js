@@ -113,19 +113,25 @@ const getPostListByIds = async (client, postIds) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-const getPostListByKeyWord = async (client, keyWord) => {
-  if (keyWord.length < 1) return [];
+const getPostListBySearch = async (client, search) => {
   const { rows } = await client.query(
     `
-
     SELECT * FROM post
-    WHERE title LIKE '%${keyWord}%'
-    OR description LIKE '%${keyWord}%'
-    OR ver LIKE '%${keyWord}%'
+    WHERE (title LIKE '%${search}%'
+    OR description LIKE '%${search}%'
+    OR summary LIKE '%${search}%'
+    OR ver LIKE '%${search}%'
+    OR id = ANY (SELECT r.post_id
+      FROM relation_post_tag r
+      INNER JOIN tag t
+      ON t.id = r.tag_id
+      AND t.name LIKE '%${search}%'
+      AND r.is_deleted = false
+      AND t.is_deleted = false))
     AND is_deleted = false
     `,
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { getPostList, getPostById, addPost, updatePost, deletePost, getPostListByUserId, getPostListByUserIds, getPostListByIds, getPostListByKeyWord };
+module.exports = { getPostList, getPostById, addPost, updatePost, deletePost, getPostListByUserId, getPostListByUserIds, getPostListByIds, getPostListBySearch };

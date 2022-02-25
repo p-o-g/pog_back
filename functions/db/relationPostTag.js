@@ -18,7 +18,11 @@ const addRelationPostTag = async (client, postId, tagId) => {
 const getRelationPostTagList = async (client) => {
   const { rows } = await client.query(
     `
-      SELECT * FROM relation_post_tag
+      SELECT r.post_id, t.id tag_id, t.name tag_name FROM relation_post_tag r
+      INNER JOIN tag t
+      ON t.id = r.tag_id
+      AND t.is_deleted = false
+      AND r.is_deleted = false
     `,
   );
   return convertSnakeToCamel.keysToCamel(rows);

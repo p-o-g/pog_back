@@ -68,7 +68,7 @@ const deletePost = async (client, postId) => {
   const { rows } = await client.query(
     `
     UPDATE post p
-    SET is_deleted = TRUE, updated_at = now()
+    SET is_deleted = true, updated_at = now()
     WHERE id = $1
     RETURNING *
     `,

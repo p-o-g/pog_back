@@ -15,7 +15,7 @@ const addRelationPostTag = async (client, postId, tagId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const getAllRelationPostTags = async (client) => {
+const getRelationPostTagList = async (client) => {
   const { rows } = await client.query(
     `
       SELECT * FROM relation_post_tag
@@ -24,14 +24,15 @@ const getAllRelationPostTags = async (client) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-const getRelationPostTagByTagIds = async (client, tagIds) => {
+const getRelationPostTagListByTagIds = async (client, tagIds) => {
   const { rows } = await client.query(
     `
         SELECT * FROM relation_post_tag
         WHERE tag_id IN (${tagIds.join()})
+        WHERE is_deleted = false
     `,
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { getAllRelationPostTags, getRelationPostTagByTagIds, addRelationPostTag };
+module.exports = { getRelationPostTagList, getRelationPostTagListByTagIds, addRelationPostTag };

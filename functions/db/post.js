@@ -1,11 +1,11 @@
 const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
-const getAllPosts = async (client) => {
+const getPostList = async (client) => {
   const { rows } = await client.query(
     `
     SELECT * FROM post p
-    WHERE is_deleted = FALSE
+    WHERE is_deleted = false
     `,
   );
   return convertSnakeToCamel.keysToCamel(rows);
@@ -16,7 +16,7 @@ const getPostById = async (client, postId) => {
     `
     SELECT * FROM post p
     WHERE id = $1
-    AND is_deleted = FALSE
+    AND is_deleted = false
     `,
     [postId],
   );
@@ -43,7 +43,7 @@ const updatePost = async (client, title, description, ver, imageUrls, postId) =>
     `
     SELECT * FROM post p
     WHERE id = $1
-    AND is_deleted = FALSE
+    AND is_deleted = false
     `,
     [postId],
   );
@@ -78,52 +78,54 @@ const deletePost = async (client, postId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const getPostsByUserId = async (client, userId) => {
+const getPostListByUserId = async (client, userId) => {
   const { rows } = await client.query(
     `
     SELECT * FROM post
     WHERE user_id = $1
-    AND is_deleted = FALSE
+    AND is_deleted = false
     `,
     [userId],
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-const getPostsByUserIds = async (client, userIds) => {
+const getPostListByUserIds = async (client, userIds) => {
   if (userIds.length < 1) return [];
   const { rows } = await client.query(
     `
     SELECT * FROM post
     WHERE user_id IN (${userIds.join()})
-    AND is_deleted = FALSE
+    AND is_deleted = false
     `,
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-const getPostByIds = async (client, postIds) => {
+const getPostListByIds = async (client, postIds) => {
   const { rows } = await client.query(
     `
     SELECT * FROM post
     WHERE id IN (${postIds.join()})
+    AND is_deleted = false
     `,
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-const getPostsBySearchWord = async (client, searchWord) => {
-  if (searchWord.length < 1) return [];
+const getPostListByKeyWord = async (client, keyWord) => {
+  if (keyWord.length < 1) return [];
   const { rows } = await client.query(
     `
+
     SELECT * FROM post
-    WHERE title LIKE '%${searchWord}%'
-    OR description LIKE '%${searchWord}%'
-    OR ver LIKE '%${searchWord}%'
-    AND is_deleted = FALSE
+    WHERE title LIKE '%${keyWord}%'
+    OR description LIKE '%${keyWord}%'
+    OR ver LIKE '%${keyWord}%'
+    AND is_deleted = false
     `,
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { getAllPosts, getPostById, addPost, updatePost, deletePost, getPostsByUserId, getPostsByUserIds, getPostByIds, getPostsBySearchWord };
+module.exports = { getPostList, getPostById, addPost, updatePost, deletePost, getPostListByUserId, getPostListByUserIds, getPostListByIds, getPostListByKeyWord };

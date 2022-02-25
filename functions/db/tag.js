@@ -15,23 +15,25 @@ const addTag = async (client, name) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const getAllTags = async (client) => {
+const getTagList = async (client) => {
   const { rows } = await client.query(
     `
       SELECT * FROM tag
+      WHERE is_deleted = false
     `,
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-const getTagByTagIds = async (client, tagIds) => {
+const getTagListByTagIds = async (client, tagIds) => {
   const { rows } = await client.query(
     `
         SELECT * FROM tag
         WHERE id IN (${tagIds.join()})
+        AND is_deleted = false
     `,
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { getAllTags, getTagByTagIds, addTag };
+module.exports = { getTagList, getTagListByTagIds, addTag };

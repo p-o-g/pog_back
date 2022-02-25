@@ -1,11 +1,11 @@
 const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
-const getAllUsers = async (client) => {
+const getUserList = async (client) => {
   const { rows } = await client.query(
     `
     SELECT * FROM "user"
-    WHERE is_deleted = FALSE
+    WHERE is_deleted = false
     `,
   );
   return convertSnakeToCamel.keysToCamel(rows);
@@ -16,7 +16,7 @@ const getUserById = async (client, userId) => {
     `
     SELECT * FROM "user"
     WHERE id = $1
-    AND is_deleted = FALSE
+    AND is_deleted = false
     `,
     // client.query()의 두 번째 파라미터에는, 쿼리문에 집어넣고 싶은 변수들의 배열을 적습니다.
     // $1에는 배열의 첫번째 변수가, $2에는 배열의 두 번째 변수... 이런 식으로 쿼리문에 변수가 들어가게 됩니다!
@@ -31,7 +31,7 @@ const getUserByIdFirebase = async (client, idFirebase) => {
     `
     SELECT * FROM "user"
     WHERE id_firebase = $1
-    AND is_deleted = FALSE
+    AND is_deleted = false
     `,
     [idFirebase],
   );
@@ -43,7 +43,7 @@ const getUserByEmail = async (client, email) => {
     `
     SELECT * FROM "user"
     WHERE email = $1
-    AND is_deleted = FALSE
+    AND is_deleted = false
     `,
     [email],
   );
@@ -55,7 +55,7 @@ const getUserByNickname = async (client, nickname) => {
     `
     SELECT * FROM "user"
     WHERE nickname = $1
-    AND is_deleted = FALSE
+    AND is_deleted = false
     `,
     [nickname],
   );
@@ -67,7 +67,7 @@ const getUserByPhone = async (client, phone) => {
     `
     SELECT * FROM "user"
     WHERE phone = $1
-    AND is_deleted = FALSE
+    AND is_deleted = false
     `,
     [phone],
   );
@@ -79,7 +79,7 @@ const updateUser = async (client, nickname, phone, organization, userId) => {
     `
     SELECT * FROM "user"
     WHERE id = $1
-    AND is_deleted = FALSE
+    AND is_deleted = false
     `,
     [userId],
   );
@@ -129,4 +129,4 @@ const addUser = async (client, email, organization, idFirebase, nickname, phone)
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { getAllUsers, getUserById, getUserByIdFirebase, getUserByEmail, getUserByPhone, getUserByNickname, updateUser, deleteUser, addUser };
+module.exports = { getUserList, getUserById, getUserByIdFirebase, getUserByEmail, getUserByPhone, getUserByNickname, updateUser, deleteUser, addUser };

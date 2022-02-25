@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
     const post = await postDB.addPost(client, userId, title, description, ver, imageUrls);
     const addTags = [];
     const addRelationPostTags = [];
-    let getTags = await tagDB.getAllTags(client);
+    let getTags = await tagDB.getTagList(client);
     let existingTag = [];
     existingTag.fill(0);
 
@@ -42,7 +42,7 @@ module.exports = async (req, res) => {
     }
 
     // response 보내는 post에 tag 붙이기
-    getTags = await tagDB.getAllTags(client);
+    getTags = await tagDB.getTagList(client);
 
     for (let i = 0; i < addRelationPostTags.length; i++) {
       addRelationPostTags[i].tag = _.find(getTags, (tag) => tag.id === addRelationPostTags[i].tagId);

@@ -15,13 +15,13 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const tagsByTagIds = await tagDB.getTagByTagIds(client, tagIds);
-    const postTagByTagIds = await relationPostTagDB.getRelationPostTagByTagIds(client, tagIds);
+    const tagsByTagIds = await tagDB.getTagListByTagIds(client, tagIds);
+    const postTagByTagIds = await relationPostTagDB.getRelationPostTagListByTagIds(client, tagIds);
     console.log(postTagByTagIds);
     const postIds = [...new Set(postTagByTagIds.map((o) => o.postId).filter(Boolean))];
-    const posts = await postDB.getPostByIds(client, postIds);
-    const relationPostTags = await relationPostTagDB.getAllRelationPostTags(client);
-    const tags = await tagDB.getAllTags(client);
+    const posts = await postDB.getPostListByIds(client, postIds);
+    const relationPostTags = await relationPostTagDB.getRelationPostTagList(client);
+    const tags = await tagDB.getTagList(client);
 
     for (let i = 0; i < relationPostTags.length; i++) {
       relationPostTags[i].tag = _.find(tags, (tag) => tag.id === relationPostTags[i].tagId);

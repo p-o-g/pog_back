@@ -4,7 +4,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { postDB, relationPostTagDB, tagDB } = require('../../../db');
+const { postDB, relationPostTagDB, tagDB, userDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const { postId } = req.params;
@@ -15,15 +15,30 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const tags = await tagDB.getTagList(client);
-    const relationPostTags = await relationPostTagDB.getRelationPostTagList(client);
-    const post = await postDB.getPostById(client, postId);
+    const relationPostTagList = await relationPostTagDB.getRelationPostTagList(client);
+    let post;
+    post = await postDB.getPostById(client, postId);
 
-    for (let i = 0; i < relationPostTags.length; i++) {
-      relationPostTags[i].tag = _.find(tags, (tag) => tag.id === relationPostTags[i].tagId);
-    }
+    const writer = await userDB.getUserById(client, post.userId);
+    post.tagList = _.filter(relationPostTagList, (r) => r.postId === post.id).map((o) => {
+      return { id: o.tagId, name: o.tagName };
+    });
 
-    post.tags = _.filter(relationPostTags, (pt) => pt.postId === post.id).map((o) => o.tag);
+    post = {
+      id: post.id,
+      thumbnail: post.thumbnail,
+      title: post.title,
+      updatedAt: post.updatedAt,
+      writer: {
+        id: writer.id,
+        nickname: writer.nickname,
+      },
+      ver: post.ver,
+      summary: post.summary,
+      tagList: post.tagList,
+      description: post.description,
+      modelUuid: post.modelUuid,
+    };
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ONE_POST_SUCCESS, post));
   } catch (error) {

@@ -15,8 +15,8 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const tags = await tagDB.getAllTags(client);
-    const relationPostTags = await relationPostTagDB.getAllRelationPostTags(client);
+    const tags = await tagDB.getTagList(client);
+    const relationPostTags = await relationPostTagDB.getRelationPostTagList(client);
     const post = await postDB.getPostById(client, postId);
 
     for (let i = 0; i < relationPostTags.length; i++) {

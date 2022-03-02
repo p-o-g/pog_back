@@ -5,7 +5,7 @@ module.exports = {
   // 회원가입
   CREATED_USER: '회원 가입 성공',
   DELETE_USER: '회원 탈퇴 성공',
-  ALREADY_EMAIL: '이미 사용중인 이메일입니다.',
+  ALREADY_EMAIL: '이미 가입된 이메일입니다.',
 
   // 로그인
   LOGIN_SUCCESS: '로그인 성공',
@@ -43,4 +43,7 @@ module.exports = {
 
   // 인증
   NO_AUTH_HEADER: 'Authorization 헤더가 없습니다.',
+  AVAILABLE_EMAIL: '사용 가능한 이메일입니다.',
+  AVAILABLE_NICKNAME: '사용 가능한 닉네임입니다.',
+  AVAILABLE_PHONE: '사용 가능한 번호입니다.',
 };

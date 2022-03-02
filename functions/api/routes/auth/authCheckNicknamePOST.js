@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
       return res.status(statusCode.CONFLICT).send(util.fail(statusCode.CONFLICT, '이미 가입된 닉네임입니다.'));
     }
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.AVAILABLE_PHONE, nickname));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.AVAILABLE_NICKNAME, nickname));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);

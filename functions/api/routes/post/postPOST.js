@@ -5,6 +5,7 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const { postDB, tagDB, relationPostTagDB } = require('../../../db');
+const postImage = require('../../../constants/postImage');
 
 module.exports = async (req, res) => {
   const { title, summary, description, ver, tagList } = req.body;
@@ -33,6 +34,12 @@ module.exports = async (req, res) => {
 
   try {
     client = await db.connect(req);
+
+    // thumbnail이 없을 경우 default image
+    if (thumbnail.length === 0 || !thumbnail) {
+      thumbnail[0] = postImage.DEFAULT_IMAGE_URL;
+    }
+
     const post = await postDB.addPost(client, req.user.id, title, description, ver, thumbnail[0], summary);
 
     const addRelationPostTagList = [];

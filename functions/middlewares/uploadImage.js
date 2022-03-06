@@ -63,7 +63,7 @@ const uploadImage = (req, res, next) => {
     try {
       await Promise.all(promises);
       req.body = fields;
-      req.imageUrls = imageUrls;
+      req.thumbnail = imageUrls;
       next();
     } catch (err) {
       console.error(err);

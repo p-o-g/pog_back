@@ -33,6 +33,10 @@ module.exports = {
   DELETE_ONE_POST_SUCCESS: '포스트 삭제 성공',
   NO_POST: '존재하지 않는 포스트입니다.',
 
+  // 태그
+  ADD_ONE_TAG_FAIL: '태그 추가 실패',
+  TAG_COUNT_FAIL: '태그는 10개까지 추가할 수 있습니다.',
+
   // 서버 내 오류
   INTERNAL_SERVER_ERROR: '서버 내 오류',
 

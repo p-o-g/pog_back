@@ -38,7 +38,7 @@ module.exports = async (req, res) => {
     const updatedPost = await postDB.updatePost(client, title, description, ver, thumbnail[0], postId, summary);
 
     const deletedRelationPostTagList = await relationPostTagDB.deleteRelationPostTagList(client, postId);
-    if (!deletedRelationPostTagList) return res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.NOT_FOUND, responseMessage.DELETE_RELATION_POST_TAG_FAIL));
+    if (!deletedRelationPostTagList) return res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.DELETE_RELATION_POST_TAG_FAIL));
 
     const addRelationPostTagList = [];
     const getTagList = await tagDB.getTagList(client);

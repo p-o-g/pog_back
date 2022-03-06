@@ -118,9 +118,7 @@ const getPostListBySearch = async (client, search) => {
     `
     SELECT * FROM post
     WHERE (title LIKE '%${search}%'
-    OR description LIKE '%${search}%'
     OR summary LIKE '%${search}%'
-    OR ver LIKE '%${search}%'
     OR id = ANY (SELECT r.post_id
       FROM relation_post_tag r
       INNER JOIN tag t

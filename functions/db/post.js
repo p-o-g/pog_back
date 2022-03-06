@@ -24,21 +24,21 @@ const getPostById = async (client, postId) => {
 };
 
 // TODO : tag도 추가 가능하도록
-const addPost = async (client, userId, title, description, ver, imageUrls) => {
+const addPost = async (client, userId, title, description, ver, thumbnail, summary) => {
   const { rows } = await client.query(
     `
     INSERT INTO post
-    (user_id, title, description, ver, image_urls)
+    (user_id, title, description, ver, thumbnail, summary)
     VALUES
-    ($1, $2, $3, $4, $5)
+    ($1, $2, $3, $4, $5, $6)
     RETURNING *
     `,
-    [userId, title, description, ver, imageUrls],
+    [userId, title, description, ver, thumbnail, summary],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const updatePost = async (client, title, description, ver, imageUrls, postId) => {
+const updatePost = async (client, title, description, ver, thumbnail, postId, summary) => {
   const { rows: existingRows } = await client.query(
     `
     SELECT * FROM post p
@@ -50,16 +50,16 @@ const updatePost = async (client, title, description, ver, imageUrls, postId) =>
 
   if (existingRows.length === 0) return false;
 
-  const data = _.merge({}, convertSnakeToCamel.keysToCamel(existingRows[0]), { title, description, ver, imageUrls });
+  const data = _.merge({}, convertSnakeToCamel.keysToCamel(existingRows[0]), { title, description, ver, thumbnail, summary });
 
   const { rows } = await client.query(
     `
     UPDATE post p
-    SET title = $1, description = $2, ver = $3, image_urls = $4, updated_at = now()
+    SET title = $1, description = $2, ver = $3, thumbnail = $4, summary = $5, updated_at = now()
     WHERE id = $5
     RETURNING * 
     `,
-    [data.title, data.description, data.ver, data.imageUrls, postId],
+    [data.title, data.description, data.ver, data.thumbnail, data.summary, postId],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };

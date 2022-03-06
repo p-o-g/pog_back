@@ -56,7 +56,7 @@ const updatePost = async (client, title, description, ver, thumbnail, postId, su
     `
     UPDATE post p
     SET title = $1, description = $2, ver = $3, thumbnail = $4, summary = $5, updated_at = now()
-    WHERE id = $5
+    WHERE id = $6
     RETURNING * 
     `,
     [data.title, data.description, data.ver, data.thumbnail, data.summary, postId],

@@ -4,7 +4,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { postDB, relationPostTagDB, tagDB, userDB } = require('../../../db');
+const { postDB, relationPostTagDB, userDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const { search } = req.query;

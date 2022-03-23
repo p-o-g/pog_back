@@ -51,4 +51,7 @@ module.exports = {
   AVAILABLE_EMAIL: '사용 가능한 이메일입니다.',
   AVAILABLE_NICKNAME: '사용 가능한 닉네임입니다.',
   AVAILABLE_PHONE: '사용 가능한 번호입니다.',
+
+  // 구독
+  UPDATE_ONE_SUBSCRIBE_SUCCESS: '구독 업데이트 성공',
 };

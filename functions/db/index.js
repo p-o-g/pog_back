@@ -4,4 +4,5 @@ module.exports = {
   postDB: require('./post'),
   tagDB: require('./tag'),
   relationPostTagDB: require('./relationPostTag'),
+  subscribeDB: require('./subscribe'),
 };

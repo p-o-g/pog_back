@@ -78,12 +78,54 @@ const deletePost = async (client, postId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const getPostListByUserId = async (client, userId) => {
+const getPostListByUserIdSearch = async (client, userId, search) => {
   const { rows } = await client.query(
-    `
-    SELECT * FROM post
-    WHERE user_id = $1
-    AND is_deleted = false
+    `    
+    SELECT p.*, u.nickname user_nickname
+    FROM post p
+    INNER JOIN "user" u
+    ON p.user_id = u.id
+    AND u.is_deleted = false
+    AND p.is_deleted = false
+    AND p.user_id = $1
+    AND (p.title LIKE '%${search}%'
+    OR p.summary LIKE '%${search}%'
+    OR p.id = ANY (SELECT r.post_id
+      FROM relation_post_tag r
+      INNER JOIN tag t
+      ON t.id = r.tag_id
+      AND t.name LIKE '%${search}%'
+      AND r.is_deleted = false
+      AND t.is_deleted = false))
+    `,
+    [userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const getPostListBySubscribeSearch = async (client, userId, search) => {
+  const { rows } = await client.query(
+    `    
+    SELECT p.*, u.nickname user_nickname
+    FROM post p
+    INNER JOIN "user" u
+    ON p.user_id = u.id
+    AND u.is_deleted = false
+    AND p.is_deleted = false
+    AND p.id = ANY ( SELECT s.post_id
+      FROM subscribe s
+      WHERE s.user_id = $1
+      AND s.is_deleted = false
+    )
+    AND (p.title LIKE '%${search}%'
+    OR p.summary LIKE '%${search}%'
+    OR p.id = ANY (SELECT r.post_id
+      FROM relation_post_tag r
+      INNER JOIN tag t
+      ON t.id = r.tag_id
+      AND t.name LIKE '%${search}%'
+      AND r.is_deleted = false
+      AND t.is_deleted = false))
     `,
     [userId],
   );
@@ -132,4 +174,4 @@ const getPostListBySearch = async (client, search) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { getPostList, getPostById, addPost, updatePost, deletePost, getPostListByUserId, getPostListByUserIds, getPostListByIds, getPostListBySearch };
+module.exports = { getPostList, getPostById, addPost, updatePost, deletePost, getPostListByUserIdSearch, getPostListBySubscribeSearch, getPostListByUserIds, getPostListByIds, getPostListBySearch };

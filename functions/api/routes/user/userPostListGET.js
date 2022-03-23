@@ -8,7 +8,7 @@ const { postDB, relationPostTagDB, userDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const { userId } = req.params;
-  const { filter, search } = req.query;
+  let { filter, search } = req.query;
 
   if (!userId || !filter) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
@@ -20,6 +20,11 @@ module.exports = async (req, res) => {
     const user = await userDB.getUserById(client, userId);
 
     let postList;
+
+    // search 값이 없을 때, 빈 스트링으로 조회하면 전체 결과 나옴
+    if (!search) {
+      search = '';
+    }
 
     // filter에 따라 다른 쿼리로 postList 조회
     if (filter === 'upload') {

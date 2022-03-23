@@ -14,7 +14,9 @@ module.exports = async (req, res) => {
 
   // tagList는 "tag1,tag2,tag3" 형식
   let addTagList = [];
-  addTagList = tagList.split(',');
+  if (tagList) {
+    addTagList = tagList.split(',');
+  }
 
   if (addTagList.length > 10) {
     return res.status(statusCode.PRECONDITION_FAILED).send(util.fail(statusCode.PRECONDITION_FAILED, responseMessage.TAG_COUNT_FAIL));
@@ -43,7 +45,7 @@ module.exports = async (req, res) => {
     const post = await postDB.addPost(client, req.user.id, title, description, ver, thumbnail[0], summary);
 
     const addRelationPostTagList = [];
-    const getTagList = await tagDB.getTagList(client);
+    let getTagList = await tagDB.getTagList(client);
 
     // 쿼리로 들어온 태그가 이미 존재하는 태그인지 확인 후
     // 존재하는 태그가 아니면 태그 생성, 존재하는 태그이면 post와 tag의 relation만 생성
@@ -51,6 +53,7 @@ module.exports = async (req, res) => {
       let existingTag = _.find(getTagList, (tag) => tag.name === addTagList[i]);
       if (!existingTag) {
         let addTag = await tagDB.addTag(client, addTagList[i]);
+        getTagList.push(addTag);
         if (!addTag) {
           res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.ADD_ONE_TAG_FAIL));
         }

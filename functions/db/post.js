@@ -23,7 +23,6 @@ const getPostById = async (client, postId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-// TODO : tag도 추가 가능하도록
 const addPost = async (client, userId, title, description, ver, thumbnail, summary) => {
   const { rows } = await client.query(
     `

@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const hpp = require('hpp');
 const helmet = require('helmet');
+const bodyParser = require('body-parser');
 
 // 보안 상 깃허브에 올리면 안 되는 정보를 .env라는 파일로 관리하기 위해 사용하는 모듈
 dotenv.config();
@@ -25,8 +26,13 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // request에 담긴 정보를 json 형태로 파싱하기 위한 미들웨어들
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+
+// file 용량 제한 늘림
+app.use(bodyParser.json({ limit: '200mb', extended: true }));
+app.use(bodyParser.urlencoded({ limit: '200mb', extended: true, parameterLimit: '200000' }));
+
 app.use(cookieParser());
 
 // 라우팅: routes 폴더로 관리

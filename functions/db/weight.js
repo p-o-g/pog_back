@@ -14,6 +14,19 @@ const addWeight = async (client, postId, url, uuid) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const updateWeight = async (client, postId, url, uuid) => {
+  const { rows } = await client.query(
+    `
+      UPDATE weight
+      SET url = $2, uuid = $3, updated_at = now()
+      WHERE post_id = $1
+      RETURNING *
+      `,
+    [postId, url, uuid],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 const getWeight = async (client, postId) => {
   const { rows } = await client.query(
     `
@@ -27,4 +40,4 @@ const getWeight = async (client, postId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { addWeight, getWeight };
+module.exports = { addWeight, getWeight, updateWeight };

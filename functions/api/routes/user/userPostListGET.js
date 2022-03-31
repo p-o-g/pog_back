@@ -4,7 +4,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { postDB, relationPostTagDB, userDB } = require('../../../db');
+const { postDB, relationPostTagDB, userDB, subscribeDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const { userId } = req.params;
@@ -26,13 +26,20 @@ module.exports = async (req, res) => {
       search = '';
     }
 
+    // 구독 정보
+    let subscribeList = [];
+    if (req.user) {
+      subscribeList = await subscribeDB.getSubscribeListByUserId(client, req.user.id);
+    }
+
     // filter에 따라 다른 쿼리로 postList 조회
     if (filter === 'upload') {
       postList = await postDB.getPostListByUserIdSearch(client, userId, search);
     } else if (filter === 'subscribe') {
       postList = await postDB.getPostListBySubscribeSearch(client, userId, search);
+    } else if (filter === 'inference') {
+      postList = await postDB.getPostListByInferenceSearch(client, userId, search);
     } else {
-      // TODO: 추후 filter 값에 이용 모델 보기도 추가
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.WRONG_FILTER));
     }
 
@@ -41,6 +48,17 @@ module.exports = async (req, res) => {
       post.tagList = _.filter(relationPostTagList, (r) => r.postId === post.id).map((o) => {
         return { id: o.tagId, name: o.tagName };
       });
+
+      // 구독 정보
+      let isSubscribed;
+      if (subscribeList.length === 0) {
+        isSubscribed = false;
+      } else {
+        const subscribeData = _.find(subscribeList, (s) => s.postId === post.id);
+
+        isSubscribed = subscribeData ? (subscribeData.isDeleted ? false : true) : false;
+      }
+
       return {
         id: post.id,
         thumbnail: post.thumbnail,
@@ -51,6 +69,7 @@ module.exports = async (req, res) => {
         },
         summary: post.summary,
         tagList: post.tagList,
+        isSubscribed: isSubscribed,
       };
     });
 

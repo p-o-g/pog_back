@@ -81,7 +81,10 @@ const uploadWeight = (req, res, next) => {
     try {
       await Promise.all(promises);
       req.body = fields;
-      req.weight = s3WeightUrl;
+      req.weight = {
+        url: s3WeightUrl,
+        uuid: uuid,
+      };
       req.pipe(busboy);
       next();
     } catch (err) {

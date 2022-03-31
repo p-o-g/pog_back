@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
 
     // 요청한 postId를 가지는 게시글이 없을 때
     if (!existingPost) {
-      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NO_POST));
+      return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_POST));
     }
 
     // 요청한 postId의 작성자가 weight 업로드를 시도하는 유저가 아닐 때
@@ -33,7 +33,7 @@ module.exports = async (req, res) => {
     }
 
     // 모델 웨이트 DB에 저장
-    const uploadedWeight = await weightDB.addWeight(client, postId, weight);
+    const uploadedWeight = await weightDB.addWeight(client, postId, weight.url, weight.uuid);
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ADD_ONE_WEIGHT_SUCCESS, uploadedWeight));
   } catch (error) {

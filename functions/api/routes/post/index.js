@@ -8,7 +8,7 @@ const uploadWeight = require('../../../middlewares/uploadWeight');
 router.post('/', checkUser, uploadImage, require('./postPOST'));
 router.post('/weight', checkUser, uploadWeight, require('./postWeightPOST'));
 router.get('/list', checkUserInfo, require('./postListGET'));
-router.get('/:postId', require('./postGET'));
+router.get('/:postId', checkUserInfo, require('./postGET'));
 router.put('/:postId', checkUser, uploadImage, require('./postPUT'));
 router.delete('/:postId', checkUser, require('./postDELETE'));
 // router.post('/tagSearch', require('./postTagSearchPOST'));

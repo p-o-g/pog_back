@@ -36,6 +36,7 @@ module.exports = {
 
   // 모델 웨이트
   ADD_ONE_WEIGHT_SUCCESS: '모델 웨이트 업로드 성공',
+  NO_WEIGHT: '모델 웨이트가 없습니다.',
 
   // 태그
   ADD_ONE_TAG_FAIL: '태그 추가 실패',

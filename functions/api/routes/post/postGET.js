@@ -4,7 +4,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { postDB, relationPostTagDB, userDB } = require('../../../db');
+const { postDB, relationPostTagDB, userDB, subscribeDB, weightDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const { postId } = req.params;
@@ -19,10 +19,27 @@ module.exports = async (req, res) => {
     let post;
     post = await postDB.getPostById(client, postId);
 
+    // weight 정보
+    const weight = await weightDB.getWeight(client, postId);
+    if (!weight) {
+      return res.status(statusCode.PRECONDITION_FAILED).send(util.fail(statusCode.PRECONDITION_FAILED, responseMessage.NO_WEIGHT));
+    }
+
     const writer = await userDB.getUserById(client, post.userId);
+
+    // 태그 정보
     post.tagList = _.filter(relationPostTagList, (r) => r.postId === post.id).map((o) => {
       return { id: o.tagId, name: o.tagName };
     });
+
+    // 구독 정보
+    let isSubscribed;
+    if (req.user) {
+      const subscribeData = await subscribeDB.getSubscribeListByPostId(client, req.user.id, postId);
+      isSubscribed = subscribeData ? (subscribeData.isDeleted ? false : true) : false;
+    } else {
+      isSubscribed = false;
+    }
 
     post = {
       id: post.id,
@@ -37,7 +54,9 @@ module.exports = async (req, res) => {
       summary: post.summary,
       tagList: post.tagList,
       description: post.description,
-      modelUuid: post.modelUuid,
+      isSubscribed: isSubscribed,
+      weightUuid: weight.uuid,
+      weightUpdatedAt: weight.updatedAt,
     };
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ONE_POST_SUCCESS, post));

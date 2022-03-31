@@ -37,12 +37,11 @@ module.exports = async (req, res) => {
         });
 
         // 구독 정보
-        let subscribeData;
         let isSubscribed;
         if (subscribeList.length === 0) {
           isSubscribed = false;
         } else {
-          subscribeData = _.find(subscribeList, (s) => s.postId === post.id);
+          const subscribeData = _.find(subscribeList, (s) => s.postId === post.id);
 
           isSubscribed = subscribeData ? (subscribeData.isDeleted ? false : true) : false;
         }

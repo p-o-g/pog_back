@@ -38,4 +38,17 @@ const updateSubscribe = async (client, userId, postId) => {
   }
 };
 
-module.exports = { updateSubscribe };
+const getSubscribeListByUserId = async (client, userId) => {
+  const { rows } = await client.query(
+    `
+    SELECT post_id, is_deleted
+    FROM subscribe
+    WHERE user_id = $1
+    AND is_deleted = false
+    `,
+    [userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+module.exports = { updateSubscribe, getSubscribeListByUserId };

@@ -4,7 +4,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { postDB, relationPostTagDB, userDB } = require('../../../db');
+const { postDB, relationPostTagDB, userDB, subscribeDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const { search } = req.query;
@@ -15,6 +15,11 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const relationPostTagList = await relationPostTagDB.getRelationPostTagList(client);
+    let subscribeList = [];
+    if (req.user) {
+      subscribeList = await subscribeDB.getSubscribeListByUserId(client, req.user.id);
+    }
+
     let postList;
     if (!search) {
       postList = await postDB.getPostList(client);
@@ -25,9 +30,23 @@ module.exports = async (req, res) => {
     postList = await Promise.all(
       postList.map(async (post) => {
         const writer = await userDB.getUserById(client, post.userId);
+
+        // 태그 정보
         post.tagList = _.filter(relationPostTagList, (r) => r.postId === post.id).map((o) => {
           return { id: o.tagId, name: o.tagName };
         });
+
+        // 구독 정보
+        let subscribeData;
+        let isSubscribed;
+        if (subscribeList.length === 0) {
+          isSubscribed = false;
+        } else {
+          subscribeData = _.find(subscribeList, (s) => s.postId === post.id);
+
+          isSubscribed = subscribeData ? (subscribeData.isDeleted ? false : true) : false;
+        }
+
         return {
           id: post.id,
           thumbnail: post.thumbnail,
@@ -38,6 +57,7 @@ module.exports = async (req, res) => {
           },
           summary: post.summary,
           tagList: post.tagList,
+          isSubscribed: isSubscribed,
         };
       }),
     );

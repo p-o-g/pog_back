@@ -42,4 +42,40 @@ const checkUser = async (req, res, next) => {
   }
 };
 
-module.exports = { checkUser };
+// accesstoken 있으면 user 정보를 주고 없으면 false를 주는 함수
+const checkUserInfo = async (req, res, next) => {
+  // request headers에 accesstoken라는 이름으로 담긴 값(jwt)을 가져옵니다.
+  const { accesstoken } = req.headers;
+
+  let client;
+  try {
+    client = await db.connect(req);
+
+    if (accesstoken) {
+      const decodedToken = jwtHandlers.verify(accesstoken);
+
+      if (decodedToken === TOKEN_EXPIRED) return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.TOKEN_EXPIRED));
+      if (decodedToken === TOKEN_INVALID) return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.TOKEN_INVALID));
+
+      const userId = decodedToken.id;
+
+      if (!userId) return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.TOKEN_INVALID));
+
+      const user = await userDB.getUserById(client, userId);
+
+      if (!user) return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NO_USER));
+      req.user = user;
+    } else {
+      req.user = false;
+    }
+    next();
+  } catch (error) {
+    console.log(error);
+    functions.logger.error(`[AUTH ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, accesstoken);
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
+  } finally {
+    client.release();
+  }
+};
+
+module.exports = { checkUser, checkUserInfo };

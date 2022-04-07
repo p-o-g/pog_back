@@ -1,9 +1,7 @@
 const express = require('express');
 const { checkUser, checkUserInfo } = require('../../../middlewares/auth');
+const { uploadImage, uploadWeight } = require('../../../middlewares/uploadFile');
 const router = express.Router();
-
-const uploadImage = require('../../../middlewares/uploadWeight');
-const uploadWeight = require('../../../middlewares/uploadWeight');
 
 router.post('/', checkUser, uploadImage, require('./postPOST'));
 router.post('/weight', checkUser, uploadWeight, require('./postWeightPOST'));

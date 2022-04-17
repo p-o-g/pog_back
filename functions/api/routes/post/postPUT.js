@@ -4,7 +4,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { postDB, tagDB, relationPostTagDB } = require('../../../db');
+const { postDB, tagDB, relationPostTagDB, weightDB } = require('../../../db');
 const postImage = require('../../../constants/postImage');
 
 module.exports = async (req, res) => {
@@ -35,7 +35,7 @@ module.exports = async (req, res) => {
       thumbnail[0] = postImage.DEFAULT_IMAGE_URL;
     }
 
-    const updatedPost = await postDB.updatePost(client, title, description, ver, thumbnail[0], postId, summary);
+    let updatedPost = await postDB.updatePost(client, title, description, ver, thumbnail[0], postId, summary);
 
     const deletedRelationPostTagList = await relationPostTagDB.deleteRelationPostTagList(client, postId);
     if (!deletedRelationPostTagList) return res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.DELETE_RELATION_POST_TAG_FAIL));
@@ -66,6 +66,25 @@ module.exports = async (req, res) => {
     updatedPost.tagList = _.filter(addRelationPostTagList, (r) => r.postId === updatedPost.id).map((o) => {
       return { id: o.tag.id, name: o.tag.name };
     });
+
+    // weight 정보
+    const weight = await weightDB.getWeight(client, postId);
+    if (!weight) {
+      return res.status(statusCode.PRECONDITION_FAILED).send(util.fail(statusCode.PRECONDITION_FAILED, responseMessage.NO_WEIGHT));
+    }
+
+    updatedPost = {
+      id: updatedPost.id,
+      userId: updatedPost.userId,
+      thumbnail: updatedPost.thumbnail,
+      title: updatedPost.title,
+      summary: updatedPost.summary,
+      description: updatedPost.description,
+      ver: updatedPost.ver,
+      updatedAt: updatedPost.updatedAt,
+      tagList: updatedPost.tagList,
+      weightUpdatedAt: weight.updatedAt,
+    };
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.UPDATE_ONE_POST_SUCCESS, updatedPost));
   } catch (error) {

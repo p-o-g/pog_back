@@ -23,21 +23,21 @@ const getPostById = async (client, postId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const addPost = async (client, userId, title, description, ver, thumbnail, summary) => {
+const addPost = async (client, userId, title, description, ver, thumbnail, summary, fee) => {
   const { rows } = await client.query(
     `
     INSERT INTO post
-    (user_id, title, description, ver, thumbnail, summary)
+    (user_id, title, description, ver, thumbnail, summary, fee)
     VALUES
-    ($1, $2, $3, $4, $5, $6)
+    ($1, $2, $3, $4, $5, $6, $7)
     RETURNING *
     `,
-    [userId, title, description, ver, thumbnail, summary],
+    [userId, title, description, ver, thumbnail, summary, fee],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const updatePost = async (client, title, description, ver, thumbnail, postId, summary) => {
+const updatePost = async (client, title, description, ver, thumbnail, postId, summary, fee) => {
   const { rows: existingRows } = await client.query(
     `
     SELECT * FROM post p
@@ -49,16 +49,16 @@ const updatePost = async (client, title, description, ver, thumbnail, postId, su
 
   if (existingRows.length === 0) return false;
 
-  const data = _.merge({}, convertSnakeToCamel.keysToCamel(existingRows[0]), { title, description, ver, thumbnail, summary });
+  const data = _.merge({}, convertSnakeToCamel.keysToCamel(existingRows[0]), { title, description, ver, thumbnail, summary, fee });
 
   const { rows } = await client.query(
     `
     UPDATE post p
-    SET title = $1, description = $2, ver = $3, thumbnail = $4, summary = $5, updated_at = now()
-    WHERE id = $6
+    SET title = $1, description = $2, ver = $3, thumbnail = $4, summary = $5, fee = $6, updated_at = now()
+    WHERE id = $7
     RETURNING * 
     `,
-    [data.title, data.description, data.ver, data.thumbnail, data.summary, postId],
+    [data.title, data.description, data.ver, data.thumbnail, data.summary, data.fee, postId],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };

@@ -8,7 +8,7 @@ const { postDB, tagDB, relationPostTagDB } = require('../../../db');
 const postImage = require('../../../constants/postImage');
 
 module.exports = async (req, res) => {
-  const { title, summary, description, ver, tagList } = req.body;
+  const { title, summary, description, ver, tagList, fee } = req.body;
 
   let thumbnail = req.thumbnail;
 
@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
   //   return tag.substring(1);
   // });
 
-  if (!title || !summary) {
+  if (!title || !summary || !fee) {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   }
 
@@ -42,7 +42,7 @@ module.exports = async (req, res) => {
       thumbnail[0] = postImage.DEFAULT_IMAGE_URL;
     }
 
-    const post = await postDB.addPost(client, req.user.id, title, description, ver, thumbnail[0], summary);
+    const post = await postDB.addPost(client, req.user.id, title, description, ver, thumbnail[0], summary, fee);
 
     const addRelationPostTagList = [];
     let getTagList = await tagDB.getTagList(client);

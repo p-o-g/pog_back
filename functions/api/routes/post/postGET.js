@@ -57,6 +57,7 @@ module.exports = async (req, res) => {
       isSubscribed: isSubscribed,
       weightUuid: weight.uuid,
       weightUpdatedAt: weight.updatedAt,
+      fee: post.fee,
     };
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ONE_POST_SUCCESS, post));

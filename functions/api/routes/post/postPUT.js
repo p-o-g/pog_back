@@ -9,11 +9,11 @@ const postImage = require('../../../constants/postImage');
 
 module.exports = async (req, res) => {
   const { postId } = req.params;
-  const { title, summary, description, ver, tagList } = req.body;
+  const { title, summary, description, ver, tagList, fee } = req.body;
 
   let thumbnail = req.thumbnail;
 
-  if (!postId || !title || !summary) {
+  if (!postId) {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   }
 
@@ -35,7 +35,7 @@ module.exports = async (req, res) => {
       thumbnail[0] = postImage.DEFAULT_IMAGE_URL;
     }
 
-    let updatedPost = await postDB.updatePost(client, title, description, ver, thumbnail[0], postId, summary);
+    let updatedPost = await postDB.updatePost(client, title, description, ver, thumbnail[0], postId, summary, fee);
 
     const deletedRelationPostTagList = await relationPostTagDB.deleteRelationPostTagList(client, postId);
     if (!deletedRelationPostTagList) return res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.DELETE_RELATION_POST_TAG_FAIL));
@@ -84,6 +84,7 @@ module.exports = async (req, res) => {
       updatedAt: updatedPost.updatedAt,
       tagList: updatedPost.tagList,
       weightUpdatedAt: weight.updatedAt,
+      fee: updatedPost.fee,
     };
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.UPDATE_ONE_POST_SUCCESS, updatedPost));

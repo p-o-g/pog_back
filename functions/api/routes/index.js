@@ -5,5 +5,6 @@ router.use('/auth', require('./auth'));
 router.use('/user', require('./user'));
 router.use('/post', require('./post'));
 router.use('/subscribe', require('./subscribe'));
+router.use('/payment', require('./payment'));
 
 module.exports = router;

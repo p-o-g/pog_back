@@ -6,4 +6,5 @@ module.exports = {
   relationPostTagDB: require('./relationPostTag'),
   subscribeDB: require('./subscribe'),
   weightDB: require('./weight'),
+  paymentDB: require('./payment'),
 };

@@ -61,4 +61,7 @@ module.exports = {
 
   // 구독
   UPDATE_ONE_SUBSCRIBE_SUCCESS: '구독 업데이트 성공',
+
+  // 결제
+  READ_ALL_PAYMENTS_SUCCESS: '모든 결제 내역 조회 성공',
 };

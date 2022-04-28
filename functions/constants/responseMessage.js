@@ -64,4 +64,5 @@ module.exports = {
 
   // 결제
   READ_ALL_PAYMENTS_SUCCESS: '모든 결제 내역 조회 성공',
+  READ_ONE_PAYMENT_SUCCESS: '결제 조회 성공',
 };

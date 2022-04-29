@@ -40,4 +40,17 @@ const getWeight = async (client, postId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { addWeight, getWeight, updateWeight };
+const getWeightByUuid = async (client, uuid) => {
+  const { rows } = await client.query(
+    `
+        SELECT * 
+        FROM weight
+        WHERE uuid = $1
+        AND is_deleted = false
+    `,
+    [uuid],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+module.exports = { addWeight, getWeight, updateWeight, getWeightByUuid };

@@ -38,6 +38,10 @@ module.exports = {
   ADD_ONE_WEIGHT_SUCCESS: '모델 웨이트 업로드 성공',
   UPDATE_ONE_WEIGHT_SUCCESS: '모델 웨이트 수정 성공',
   NO_WEIGHT: '모델 웨이트가 없습니다.',
+  WRONG_WEIGHT_UUID: '모델 웨이트 UUID가 잘못되었습니다.',
+
+  // 모델 인퍼런스
+  ADD_ONE_INFERENCE_SUCCESS: '모델 인퍼런스 성공',
 
   // 태그
   ADD_ONE_TAG_FAIL: '태그 추가 실패',

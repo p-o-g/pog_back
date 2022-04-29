@@ -25,4 +25,18 @@ const getPaymentByUserId = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows[rows.length - 1]);
 };
 
-module.exports = { getPaymentListByUserId, getPaymentByUserId };
+const addPayment = async (client, userId, content, price, balance) => {
+  const { rows } = await client.query(
+    `
+      INSERT INTO payment
+      (user_id, content, price, balance)
+      VALUES
+      ($1, $2, $3, $4)
+      RETURNING *
+      `,
+    [userId, content, price, balance],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+module.exports = { getPaymentListByUserId, getPaymentByUserId, addPayment };

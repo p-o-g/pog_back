@@ -6,5 +6,6 @@ router.use('/user', require('./user'));
 router.use('/post', require('./post'));
 router.use('/subscribe', require('./subscribe'));
 router.use('/payment', require('./payment'));
+router.use('/inference', require('./inference'));
 
 module.exports = router;

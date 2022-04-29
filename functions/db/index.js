@@ -7,4 +7,5 @@ module.exports = {
   subscribeDB: require('./subscribe'),
   weightDB: require('./weight'),
   paymentDB: require('./payment'),
+  inferenceDB: require('./inference'),
 };

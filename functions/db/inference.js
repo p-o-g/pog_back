@@ -1,6 +1,21 @@
 const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
+const getInferenceListByPostId = async (client, postId, userId) => {
+  const { rows } = await client.query(
+    `
+      SELECT * 
+      FROM inference
+      WHERE post_id = $1
+      AND user_id = $2
+      AND is_deleted = false
+      ORDER BY id
+      `,
+    [postId, userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 const addInference = async (client, postId, imageCount, userId) => {
   const { rows } = await client.query(
     `
@@ -28,4 +43,4 @@ const updateInference = async (client, imageUrls, id) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { addInference, updateInference };
+module.exports = { addInference, updateInference, getInferenceListByPostId };

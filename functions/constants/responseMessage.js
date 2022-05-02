@@ -42,6 +42,7 @@ module.exports = {
 
   // 모델 인퍼런스
   ADD_ONE_INFERENCE_SUCCESS: '모델 인퍼런스 성공',
+  READ_ALL_INFERENCES_SUCCESS: '모든 모델 인퍼런스 조회 성공',
 
   // 태그
   ADD_ONE_TAG_FAIL: '태그 추가 실패',

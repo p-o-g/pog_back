@@ -26,6 +26,7 @@ module.exports = async (req, res) => {
         content: content,
         createdAt: inference.createdAt,
         imageCount: imageCount,
+        imageUrls: inference.imageUrls,
       };
     });
 

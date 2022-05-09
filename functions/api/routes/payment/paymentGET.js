@@ -14,7 +14,9 @@ module.exports = async (req, res) => {
 
     const payment = await paymentDB.getPaymentByUserId(client, req.user.id);
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ONE_PAYMENT_SUCCESS, payment));
+    const balance = payment ? payment.balance : 0;
+
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ONE_PAYMENT_SUCCESS, balance));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
